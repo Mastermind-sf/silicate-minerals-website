@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Map of Ores</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: "Book Antiqua", "Times New Roman", serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background: url('https://png.pngtree.com/background/20230528/original/pngtree-cluster-of-rock-specimens-with-many-colored-stones-picture-image_2779700.jpg') no-repeat center center fixed;
+            background-size: cover;
+            backdrop-filter: blur(5px);
+        }
+        .container {
+            max-width: 1100px;
+            margin: 50px auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+        .map-container {
+            width: 100%;
+            height: 500px;
+            margin-bottom: 30px;
+        }
+        .legend {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .legend span {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .legend span:before {
+            content: "• ";
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        footer {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Interactive Map of Valuable Non-Silicate Ores</div>
+
+        <div class="map-container" id="map"></div>
+
+        <!-- Legend for the map -->
+        <div class="legend">
+            <strong>Legend:</strong>
+            <span style="color: red;">Hematite</span>
+            <span style="color: blue;">Magnetite</span>
+            <span style="color: gold;">Pyrite</span>
+            <span style="color: gray;">Galena</span>
+            <span style="color: white;">Barite</span>
+            <span style="color: green;">Fluorite</span>
+            <span style="color: yellow;">Apatite</span>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Mineral Exploration Inc.</p>
+    </footer>
+
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([0, 0], 2); // Center on the world map with a zoom level of 2
+
+        // Set the tile layer to OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add ore markers with corresponding colors and names
+        var ores = [
+            {name: "Hematite", coords: [-5.281409371816627,-54.22544527964194], color: "red"},
+            {name: "Hematite", coords: [-29.74595369084533,124.67973187571445], color: "red"},
+            {name: "Hematite", coords: [34.00723085531656,103.8482773266961], color: "red"},
+            {name: "Hematite", coords: [20.585654537219177,75.4251415226282], color: "red"},
+            {name: "Hematite", coords: [61.196406867102816,148.3766069069549], color: "red"},
+            {name: "Magnetite", coords: [-18.09526257817778,141.64129298068124], color: "blue"},
+            {name: "Magnetite", coords: [64.06755290446769,-155.4501830374144], color: "blue"},
+            {name: "Magnetite", coords: [42.495062363664694,128.03885579390067], color: "blue"},
+            {name: "Magnetite", coords: [57.64314802325643,18.526647341930847], color: "blue"},
+            {name: "Pyrite", coords: [42.00549360381782,-2.209867888923731], color: "gold"},
+            {name: "Pyrite", coords: [-7.1339180819518235,-76.56768582922534], color: "gold"},
+            {name: "Pyrite", coords: [35.10674842336419,82.24923560727645], color: "gold"},
+            {name: "Pyrite", coords: [-26.47143880247152,24.571754380402044], color: "gold"},
+            {name: "Galena", coords: [47.47888431464349,-115.96299907756396], color: "gray"},
+            {name: "Galena", coords: [-27.835338714869014,114.6845752803321], color: "gray"},
+            {name: "Galena", coords: [20.549777313990266,-89.29077399644903], color: "gray"},
+            {name: "Galena", coords: [-7.1267920637039675,-75.88687281011141], color: "gray"},
+            {name: "Barite", coords: [25.64928265410689,115.79273430157293], color: "white"},
+            {name: "Barite", coords: [27.888305397542528,75.19715125205376], color: "white"},
+            {name: "Barite", coords: [24.026708833423825,-15.092022731925095], color: "white"},
+            {name: "Barite", coords: [43.07872204246616,-77.89268216136092], color: "white"},
+            {name: "Fluorite", coords: [39.05360792014282,78.96139868455258], color: "green"},
+            {name: "Fluorite", coords: [27.158347491960356,-102.89444054419147], color: "green"},
+            {name: "Fluorite", coords: [48.585904690713676,103.32161640497645], color: "green"},
+            {name: "Fluorite", coords: [-31.92952031655605,21.38347960429124], color: "green"},
+            {name: "Apatite", coords: [32.75653921258629,-2.58252208737696], color: "yellow"},
+            {name: "Apatite", coords: [27.675887622389087,111.00745543091244], color: "yellow"},
+            {name: "Apatite", coords: [39.12468923232563,-118.49119573566479], color: "yellow"},
+            {name: "Apatite", coords: [64.9920150717309,60.48489270798563], color: "yellow"}
+        ];
+
+        ores.forEach(function(ore) {
+            L.circleMarker(ore.coords, {
+                color: ore.color,
+                radius: 6
+            }).bindPopup(ore.name).addTo(map);
+        });
+    </script>
+</body>
+</html>

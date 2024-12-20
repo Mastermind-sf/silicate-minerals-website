@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Map of Ores</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: "Book Antiqua", "Times New Roman", serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background: url('https://png.pngtree.com/background/20230528/original/pngtree-various-minerals-that-are-in-a-pile-on-a-dark-background-picture-image_2779790.jpg') no-repeat center center fixed;
+            background-size: cover;
+            backdrop-filter: blur(5px);
+        }
+        .container {
+            max-width: 1100px;
+            margin: 50px auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+        .map-container {
+            width: 100%;
+            height: 500px;
+            margin-bottom: 30px;
+        }
+        .legend {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .legend span {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .legend span:before {
+            content: "• ";
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        footer {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Interactive Map of Valuable Silicate Ores</div>
+
+        <div class="map-container" id="map"></div>
+
+        <!-- Legend for the map -->
+        <div class="legend">
+            <strong>Legend:</strong>
+            <span style="color: blue;">Tungsten</span>
+            <span style="color: red;">Topaz</span>
+            <span style="color: green;">Garnet</span>
+            <span style="color: orange;">Beryl</span>
+            <span style="color: purple;">Zircon</span>
+            <span style="color: brown;">Olivine</span>
+            <span style="color: yellow;">Spodumene</span>
+            <span style="color: gray;">Clay Minerals</span>
+            <span style="color: pink;">Talc</span>
+            <span style="color: lightblue;">Aluminum Silicates</span>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Mineral Exploration Inc.</p>
+    </footer>
+
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([0, 0], 2); // Center on the world map with a zoom level of 2
+
+        // Set the tile layer to OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add mineral markers with corresponding colors
+        var ores = [
+            {name: "Beryl", coords: [5.35958883374681,-73.7342155414098], color: "orange"},
+            {name: "Beryl", coords: [-16.666158469372768,-42.40408460881416], color: "orange"},
+            {name: "Beryl", coords: [-18.230742138992827,47.49023530230713], color: "orange"},
+            {name: "Beryl", coords: [-13.103825560883347,28.122193753451665], color: "orange"},
+            {name: "Garnet", coords: [24.298103447954354,83.35758148859736], color: "green"},
+            {name: "Garnet", coords: [6.76364143079105,80.47363419722195], color: "green"},
+            {name: "Garnet", coords: [-27.67786627904429,19.55910553913815], color: "green"},
+            {name: "Garnet", coords: [46.82975892350794,-113.35772649818323], color: "green"},
+            {name: "Zircon", coords: [-28.768727356217962,121.90513782540529], color: "purple"},
+            {name: "Zircon", coords: [8.387460678150878,80.44139327700523], color: "purple"},
+            {name: "Zircon", coords: [-13.840415324122622,-42.309034752174654], color: "purple"},
+            {name: "Zircon", coords: [-23.055648559284965,24.059212251030495], color: "purple"},
+            {name: "Olivine", coords: [61.93288477256215,5.50776589631144], color: "brown"},
+            {name: "Olivine", coords: [38.48587890774492,102.14788738568522], color: "brown"},
+            {name: "Olivine", coords: [48.74491116938731,-122.00942661627852], color: "brown"},
+            {name: "Spodumene", coords: [-15.037862997704826,132.56197395796858], color: "yellow"},
+            {name: "Spodumene", coords: [30.336488810335666,101.33600439784038], color: "yellow"},
+            {name: "Spodumene", coords: [-18.289209726279545,28.040906263571753], color: "yellow"},
+            {name: "Topaz", coords: [-20.31987115316331,-43.7471552742382], color: "red"},
+            {name: "Topaz", coords: [7.520492106547261,80.65812883467268], color: "red"},
+            {name: "Topaz", coords: [65.18299978212694,125.72667645858739], color: "red"},
+            {name: "Topaz", coords: [35.604402265583566,75.59025505887419], color: "red"},
+            {name: "Clay Minerals", coords: [41.761865435410144,112.94121704706994], color: "gray"},
+            {name: "Clay Minerals", coords: [-18.060096519879874,-42.78834328205412], color: "gray"},
+            {name: "Clay Minerals", coords: [32.481708938949104,-97.47667562833645], color: "gray"},
+            {name: "Talc", coords: [33.39190370369101,106.38786996521202], color: "pink"},
+            {name: "Talc", coords: [26.348676152975287,74.57674500768947], color: "pink"},
+            {name: "Talc", coords: [38.71523738385016,-121.89316484152678], color: "pink"},
+            {name: "Aluminum Silicates", coords: [37.37723334971666,30.591255995912444], color: "lightblue"},
+            {name: "Aluminum Silicates", coords: [24.375235704803256,117.62280382393796], color: "lightblue"},
+            {name: "Aluminum Silicates", coords: [42.815641955060975,10.265789944322098], color: "lightblue"},
+            {name: "Aluminum Silicates", coords: [57.76389084587094,-127.57331751963179], color: "lightblue"},
+            {name: "Tungsten", coords: [25.759825940848348,115.21028589423906], color: "blue"},
+            {name: "Tungsten", coords: [49.107763218292035,137.64192139931922], color: "blue"},
+            {name: "Tungsten", coords: [40.14728660580342,101.32443682559779], color: "blue"}
+        ];
+
+        ores.forEach(function(ore) {
+            L.circleMarker(ore.coords, {
+                color: ore.color,
+                radius: 6
+            }).bindPopup(ore.name).addTo(map);
+        });
+    </script>
+</body>
+</html>
